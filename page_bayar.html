@@ -32,17 +32,17 @@
             <h1 class="text-xl font-black text-blue-950 uppercase tracking-tight">Formulir Pelaporan Kas Sinera 2026</h1>
         </div>
 
-        <form id="kasForm" class="form-card p-6 md:p-8 rounded-3xl space-y-6 border border-white" novalidate>
+        <form id="kasForm" class="form-card p-6 md:p-8 rounded-3xl space-y-6 border border-white">
             
             <div>
                 <label class="block text-[10px] font-bold uppercase tracking-wider text-blue-500 mb-2 ml-1">Nama Lengkap Sesuai Identitas</label>
-                <input type="text" name="nama" id="nama" placeholder="Masukkan nama lengkap Anda" 
+                <input type="text" name="nama" id="nama" placeholder="Masukkan nama lengkap Anda" required
                        class="w-full p-4 rounded-2xl bg-gray-50 text-sm focus:bg-white focus:ring-2 focus:ring-blue-100 outline-none border border-transparent focus:border-blue-400 transition-all">
             </div>
 
             <div>
                 <label class="block text-[10px] font-bold uppercase tracking-wider text-blue-500 mb-2 ml-1">Divisi Kepengurusan</label>
-                <select name="divisi" id="divisi" class="select-custom w-full p-4 rounded-2xl bg-gray-50 text-sm focus:bg-white focus:ring-2 focus:ring-blue-100 outline-none border border-transparent focus:border-blue-400 transition-all cursor-pointer">
+                <select name="divisi" id="divisi" required class="select-custom w-full p-4 rounded-2xl bg-gray-50 text-sm focus:bg-white focus:ring-2 focus:ring-blue-100 outline-none border border-transparent focus:border-blue-400 transition-all cursor-pointer">
                     <option value="" disabled selected>Pilih Divisi Anda</option>
                     <option value="HRD">Human Resource Development (HRD)</option>
                     <option value="COMDEV">Community Development (COMDEV)</option>
@@ -54,7 +54,7 @@
 
             <div>
                 <label class="block text-[10px] font-bold uppercase tracking-wider text-blue-500 mb-2 ml-1">Periode Pembayaran</label>
-                <select name="periode" id="periode" class="select-custom w-full p-4 rounded-2xl bg-gray-50 text-sm focus:bg-white focus:ring-2 focus:ring-blue-100 outline-none border border-transparent focus:border-blue-400 transition-all cursor-pointer">
+                <select name="periode" id="periode" required class="select-custom w-full p-4 rounded-2xl bg-gray-50 text-sm focus:bg-white focus:ring-2 focus:ring-blue-100 outline-none border border-transparent focus:border-blue-400 transition-all cursor-pointer">
                     <option value="" disabled selected>Pilih Periode Yang Dibayarkan</option>
                     <option value="Periode 1">Periode 1 (April - Juni)</option>
                     <option value="Periode 2">Periode 2 (Juli - September)</option>
@@ -64,7 +64,7 @@
 
             <div>
                 <label class="block text-[10px] font-bold uppercase tracking-wider text-blue-500 mb-2 ml-1">Email Student / Institusi</label>
-                <input type="email" name="email" id="email" placeholder="Contoh: nama@student.university.ac.id" 
+                <input type="email" name="email" id="email" placeholder="Contoh: nama@students.uii.ac.id" required
                        class="w-full p-4 rounded-2xl bg-gray-50 text-sm focus:bg-white focus:ring-2 focus:ring-blue-100 outline-none border border-transparent focus:border-blue-400 transition-all">
             </div>
 
@@ -73,72 +73,86 @@
             <div class="bg-blue-50 rounded-2xl p-6 text-center border border-blue-100">
                 <p class="text-[10px] uppercase tracking-[3px] font-bold text-blue-500 mb-4">Metode Pembayaran via QRIS</p>
                 <div class="bg-white p-3 rounded-xl inline-block mb-4 shadow-sm border border-blue-100">
-                    <img src="qris.png" alt="QRIS Sinera" class="w-48 h-48 object-contain">
+                    <img src="QRIS_ALWAN.jpeg" alt="QRIS Sinera" class="w-48 h-48 object-contain">
                 </div>
                 <p class="text-[10px] text-blue-400 italic font-medium">Pembayaran akan diverifikasi otomatis oleh sistem melalui email.</p>
             </div>
 
             <div>
                 <label class="block text-[10px] font-bold uppercase tracking-wider text-blue-500 mb-2 ml-1">Lampirkan Bukti Transfer</label>
-                <input type="file" id="bukti" class="w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer border border-dashed border-blue-200 rounded-2xl p-2 bg-white">
+                <input type="file" id="bukti" accept="image/*" required class="w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700 cursor-pointer border border-dashed border-blue-200 rounded-2xl p-2 bg-white">
             </div>
 
             <button type="submit" id="submitBtn"
                     class="w-full bg-blue-600 text-white p-5 rounded-2xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-2">
-                <i class="fas fa-check-circle text-sm"></i> Kirim Laporan Pembayaran
+                <i class="fas fa-paper-plane text-sm"></i> Kirim Laporan Pembayaran
             </button>
 
         </form>
     </div>
 
     <script>
+        const scriptURL = "https://script.google.com/macros/s/AKfycbxiUx39w2olw4ztB47edbzdmZE32uAXKZOOTb53wkmoido1Jyz3W0o28EwuzYplQjMJ/exec"; 
         const form = document.getElementById('kasForm');
         const btn = document.getElementById('submitBtn');
 
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', e => {
             e.preventDefault();
 
-            // 1. Ambil Data
-            const nama = document.getElementById('nama').value.trim();
-            const divisi = document.getElementById('divisi').value;
-            const periode = document.getElementById('periode').value;
-            const email = document.getElementById('email').value.trim();
-            const bukti = document.getElementById('bukti').value;
-
-            // 2. Validasi Kelengkapan Data
-            if (!nama || !divisi || !periode || !email || !bukti) {
-                Swal.fire({
-                    title: 'Data Belum Lengkap',
-                    text: 'Tolong lengkapi data terlebih dahulu sebelum mengirim laporan.',
-                    icon: 'warning',
-                    confirmButtonColor: '#f59e0b',
-                    confirmButtonText: 'Lengkapi Sekarang'
-                });
-                return;
-            }
-
-            // 3. Animasi Loading
+            // 1. Ambil File Bukti
+            const fileInput = document.getElementById('bukti');
+            const file = fileInput.files[0];
+            
+            // 2. Loading State
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin text-sm"></i> Memproses Laporan...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin text-sm"></i> Sedang Memproses Bukti...';
 
-            // 4. Simulasi Sukses
-            setTimeout(() => {
-                Swal.fire({
-                    title: 'Data sudah tersimpan!',
-                    text: 'Terima kasih, laporan Anda telah berhasil kami terima. Silakan cek email student Anda untuk bukti pembayaran resmi.',
-                    icon: 'success',
-                    confirmButtonText: 'Selesai',
-                    confirmButtonColor: '#2563eb',
-                    allowOutsideClick: false
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.reset(); 
-                    }
+            // 3. Reader untuk mengubah Gambar ke Base64 (Agar bisa masuk Sheets/Drive)
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function() {
+                const base64Data = reader.result.split(',')[1];
+                
+                // Siapkan data untuk dikirim
+                const formData = {
+                    nama: document.getElementById('nama').value,
+                    divisi: document.getElementById('divisi').value,
+                    periode: document.getElementById('periode').value,
+                    email: document.getElementById('email').value,
+                    fileData: base64Data,
+                    fileName: file.name,
+                    fileMime: file.type
+                };
+
+                // Kirim via POST
+                fetch(scriptURL, {
+                    method: 'POST',
+                    body: JSON.stringify(formData)
+                })
+                .then(response => {
+                    Swal.fire({
+                        title: 'Berhasil Terkirim!',
+                        text: 'Data Anda telah tersimpan. Silakan cek email student Anda untuk bukti resmi.',
+                        icon: 'success',
+                        confirmButtonColor: '#2563eb'
+                    }).then(() => {
+                        form.reset();
+                        window.location.href = 'index.html'; // Kembali ke dashboard
+                    });
+                })
+                .catch(error => {
+                    Swal.fire({
+                        title: 'Gagal Mengirim',
+                        text: 'Terjadi kesalahan sistem. Pastikan Apps Script Anda diatur untuk menerima JSON.',
+                        icon: 'error'
+                    });
+                    console.error('Error!', error);
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-paper-plane text-sm"></i> Kirim Laporan Pembayaran';
                 });
-
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-check-circle text-sm"></i> Kirim Laporan Pembayaran';
-            }, 1500);
+            };
         });
     </script>
 </body>
