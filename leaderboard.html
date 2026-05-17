@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sinera 2026 - Divisi Leaderboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .bg-sky-pattern {
+            background-image: radial-gradient(#bae6fd 0.8px, transparent 0.8px);
+            background-size: 24px 24px;
+        }
+    </style>
+</head>
+<body class="font-sans text-blue-950 bg-sky-50 bg-sky-pattern min-h-screen flex flex-col">
+
+    <header class="bg-white/80 backdrop-blur-md border-b border-blue-100 sticky top-0 z-40 px-6 py-4 flex justify-between items-center shadow-xs">
+        <div class="flex items-center space-x-3">
+            <span class="text-2xl">🏆</span>
+            <div>
+                <h1 class="text-lg font-black tracking-tight text-blue-950">Sinera 2026</h1>
+                <p class="text-[10px] text-blue-500 font-bold uppercase tracking-wider"></p>
+            </div>
+        </div>
+        <a href="index.html" class="flex items-center space-x-1.5 text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-xl transition-all shadow-xs">
+            <span>🏠</span> <span>Dashboard Utama</span>
+        </a>
+    </header>
+
+    <main class="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+        
+        <div class="bg-white border border-blue-100 rounded-2xl p-6 shadow-xs flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-center md:text-left">
+                <h2 class="text-xl font-black uppercase tracking-tight text-blue-950">Leaderboard Pembayaran Kas</h2>
+                <p class="text-xs text-gray-400 mt-0.5"></p>
+            </div>
+            <div class="flex items-center space-x-2">
+                <label class="text-xs font-bold text-gray-400 uppercase tracking-wide">Pilih Periode:</label>
+                <select id="select-periode" onchange="gantiPeriodeTampilan()" class="bg-blue-50 border border-blue-200 text-blue-950 text-xs font-bold rounded-xl px-4 py-2.5 outline-none cursor-pointer focus:ring-2 focus:ring-blue-400">
+                    <option value="">Menghubungkan...</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="box-presentase" class="hidden bg-white border border-blue-100 p-6 rounded-2xl shadow-sm space-y-3">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h4 class="font-black text-xs text-blue-950  tracking-wider">📊 Akumulasi Total Pembayaran</h4>
+                    <p class="text-xs text-gray-400 mt-0.5">Total Anggota: <span class="font-bold text-gray-600">74 Anggota</span></p>
+                </div>
+                <div class="text-right">
+                    <span id="txt-persen" class="text-2xl font-black">0%</span>
+                    <p id="txt-rasio-angka" class="text-[10px] text-gray-400 font-bold">0 / 74 Orang Lunas</p>
+                </div>
+            </div>
+            <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden">
+                <div id="progress-bar" class="h-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div id="podium-section" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end pt-2 max-w-2xl mx-auto"></div>
+
+        <div class="bg-white border border-blue-100 rounded-2xl shadow-sm p-6 flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-black text-xs text-blue-950 uppercase tracking-wider">🏆 Peringkat Ketaatan Finansial</h3>
+                <div class="flex space-x-3 text-[9px] font-bold uppercase tracking-wide">
+                    <div class="flex items-center space-x-1"><span class="w-2 h-2 bg-red-500 rounded-full"></span> <span class="text-gray-400">&lt;50% </span></div>
+                    <div class="flex items-center space-x-1"><span class="w-2 h-2 bg-amber-500 rounded-full"></span> <span class="text-gray-400">50-69% </span></div>
+                    <div class="flex items-center space-x-1"><span class="w-2 h-2 bg-green-500 rounded-full"></span> <span class="text-gray-400">&ge;70% </span></div>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs sm:text-sm">
+                    <thead>
+                        <tr class="border-b border-gray-100 text-gray-400 font-bold uppercase tracking-wider text-[10px]">
+                            <th class="pb-3 pl-2 w-[15%]">Rank</th>
+                            <th class="pb-3 w-[30%]">Divisi</th>
+                            <th class="pb-3 w-[35%]">Rasio Kepatuhan Anggota</th>
+                            <th class="pb-3 text-right pr-2 w-[20%]">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabel-leaderboard" class="text-gray-600 font-medium divide-y divide-gray-50">
+                        <tr>
+                            <td colspan="4" class="py-8 text-center text-gray-400 animate-pulse">Menghubungkan ke server finansial...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // PENTING: Ganti URL di bawah dengan link Web App /exec kamu yang sedang aktif!
+        const scriptURL = "https://script.google.com/macros/s/AKfycbxiUx39w2olw4ztB47edbzdmZE32uAXKZOOTb53wkmoido1Jyz3W0o28EwuzYplQjMJ/exec";  
+        let masterDataLeaderboard = {};
+
+        // Definisi urutan prioritas bawaan absolut berdasarkan kronologi baris mentah di spreadsheet
+        // COMDEV paling atas (paling awal), diikuti PR, lalu RND.
+        const prioritasSesuaiSheets = ["COMDEV", "PR", "RND", "HRD", "PI"];
+
+        async function fetchInitialData() {
+            try {
+                const response = await fetch(scriptURL);
+                const data = await response.json();
+                
+                const rawLeaderboard = data.leaderboardPerPeriode;
+                masterDataLeaderboard = {};
+
+                for (let key in rawLeaderboard) {
+                    let cocokAngka = key.match(/\d+/);
+                    let namaBersih = cocokAngka ? "Periode " + cocokAngka[0] : key;
+
+                    if (!masterDataLeaderboard[namaBersih]) {
+                        masterDataLeaderboard[namaBersih] = {
+                            totalOrangLunasSinera: rawLeaderboard[key].totalOrangLunasSinera,
+                            peringkat: rawLeaderboard[key].peringkat.map(d => {
+                                // Cari urutan waktu setor berdasarkan array prioritas kronologis kita
+                                let indeksWaktu = prioritasSesuaiSheets.indexOf(d.divisi.toUpperCase().trim());
+                                return { 
+                                    ...d, 
+                                    urutanKronologis: indeksWaktu === -1 ? 99 : indeksWaktu 
+                                };
+                            })
+                        };
+                    } else {
+                        masterDataLeaderboard[namaBersih].totalOrangLunasSinera += rawLeaderboard[key].totalOrangLunasSinera;
+                        
+                        rawLeaderboard[key].peringkat.forEach(divBaru => {
+                            let divLama = masterDataLeaderboard[namaBersih].peringkat.find(d => d.divisi === divBaru.divisi);
+                            if (divLama) {
+                                divLama.totalBayar += divBaru.totalBayar;
+                                divLama.orangLunas += divBaru.orangLunas;
+                            }
+                        });
+                    }
+                }
+
+                const selectPrd = document.getElementById('select-periode');
+                selectPrd.innerHTML = "";
+
+                const namaPeriodeDitemukan = Object.keys(masterDataLeaderboard);
+
+                if(namaPeriodeDitemukan.length === 0) {
+                    selectPrd.innerHTML = `<option value="">Belum ada data kas</option>`;
+                    document.getElementById('tabel-leaderboard').innerHTML = `<tr><td colspan="4" class="py-6 text-center text-gray-400">Belum ada mutasi iuran kas.</td></tr>`;
+                    return;
+                }
+
+                // Urutkan pilihan periode terkecil ke terbesar (Periode 1, Periode 2, dst)
+                namaPeriodeDitemukan.sort((a, b) => {
+                    return (a.match(/\d+/) || [0])[0] - (b.match(/\d+/) || [0])[0];
+                });
+
+                namaPeriodeDitemukan.forEach(prd => {
+                    selectPrd.innerHTML += `<option value="${prd}">${prd}</option>`;
+                });
+
+                // Set default tampilan ke periode terakhir/terbaru yang ditemukan agar dinamis
+                renderDataPeriode(namaPeriodeDitemukan[namaPeriodeDitemukan.length - 1]);
+                selectPrd.value = namaPeriodeDitemukan[namaPeriodeDitemukan.length - 1];
+
+            } catch(err) {
+                console.error(err);
+                document.getElementById('tabel-leaderboard').innerHTML = `<tr><td colspan="4" class="py-6 text-center text-red-500 font-bold">Gagal memuat sistem klasemen. Periksa koneksi internet atau tautan skrip.</td></tr>`;
+            }
+        }
+
+        function gantiPeriodeTampilan() {
+            const prdPilihan = document.getElementById('select-periode').value;
+            renderDataPeriode(prdPilihan);
+        }
+
+        function renderDataPeriode(periodeName) {
+            const dataPeriodeIni = masterDataLeaderboard[periodeName];
+            const podiumSection = document.getElementById('podium-section');
+            const tabel = document.getElementById('tabel-leaderboard');
+            
+            if(!dataPeriodeIni) return;
+
+            const totalSudahBayar = dataPeriodeIni.totalOrangLunasSinera;
+            const totalAnggotaSinera = 74; 
+            const persentaseGlobal = Math.round((totalSudahBayar / totalAnggotaSinera) * 100);
+
+            document.getElementById('box-presentase').classList.remove('hidden');
+            document.getElementById('txt-persen').innerText = persentaseGlobal + "%";
+            document.getElementById('txt-rasio-angka').innerText = `${totalSudahBayar} / ${totalAnggotaSinera} Orang Lunas`;
+            
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = persentaseGlobal + "%";
+            progressBar.className = "h-full transition-all duration-500 " + (persentaseGlobal < 50 ? 'bg-red-500' : persentaseGlobal < 70 ? 'bg-amber-500' : 'bg-green-500');
+
+            // LOGIKA SORTING JUARA SERI BERDASARKAN WAKTU BAYAR TERAWAL
+            const list = dataPeriodeIni.peringkat;
+            list.sort((a, b) => {
+                if (b.totalBayar !== a.totalBayar) {
+                    return b.totalBayar - a.totalBayar; // Aturan Utama: Uang terbanyak di atas
+                }
+                return a.urutanKronologis - b.urutanKronologis; // Aturan Cadangan (Seri): Indeks terkecil (setor duluan di Sheets) berada di atas!
+            });
+            
+            // RENDERING PODIUM ATAS
+            let htmlPodium = "";
+            if(list[1]) {
+                htmlPodium += `
+                    <div class="bg-white border border-blue-100 p-5 rounded-2xl text-center shadow-xs order-2 md:order-1 flex flex-col items-center w-full">
+                        <span class="text-3xl">🥈</span>
+                        <h4 class="font-bold text-base text-blue-950 mt-1 tracking-wide">Divisi ${list[1].divisi}</h4>
+                        <p class="text-xs font-black text-blue-600 mt-2">Rp ${list[1].totalBayar.toLocaleString('id-ID')}</p>
+                    </div>
+                `;
+            }
+            if(list[0]) {
+                htmlPodium += `
+                    <div class="bg-gradient-to-b from-amber-50 to-white border-2 border-amber-300 p-6 rounded-2xl text-center shadow-md order-1 md:order-2 flex flex-col items-center w-full transform md:-translate-y-4 scale-105 relative">
+                        <span class="absolute -top-5 text-2xl">👑</span>
+                        <span class="text-4xl">🏆</span>
+                        <h4 class="font-bold text-lg text-amber-900 mt-1 tracking-wide">Divisi ${list[0].divisi}</h4>
+                        <p class="text-sm font-black text-amber-600 mt-2">Rp ${list[0].totalBayar.toLocaleString('id-ID')}</p>
+                    </div>
+                `;
+            }
+            if(list[2]) {
+                htmlPodium += `
+                    <div class="bg-white border border-blue-100 p-5 rounded-2xl text-center shadow-xs order-3 flex flex-col items-center w-full">
+                        <span class="text-3xl">🥉</span>
+                        <h4 class="font-bold text-base text-blue-950 mt-1 tracking-wide">Divisi ${list[2].divisi}</h4>
+                        <p class="text-xs font-black text-blue-600 mt-2">Rp ${list[2].totalBayar.toLocaleString('id-ID')}</p>
+                    </div>
+                `;
+            }
+            podiumSection.innerHTML = htmlPodium;
+
+            // RENDERING TABEL UTAMA
+            tabel.innerHTML = "";
+            list.forEach((divObj, index) => {
+                let rankBadge = `<span class="font-bold text-gray-400">#${index + 1}</span>`;
+                if (index === 0) rankBadge = "🥇";
+                if (index === 1) rankBadge = "🥈";
+                if (index === 2) rankBadge = "🥉";
+
+                const persenInternal = Math.round((divObj.orangLunas / divObj.kuota) * 100) || 0;
+                let warnaTeksInternal = "text-red-500";
+                if(persenInternal >= 50 && persenInternal < 70) warnaTeksInternal = "text-amber-500";
+                if(persenInternal >= 70) warnaTeksInternal = "text-green-600";
+
+                tabel.innerHTML += `
+                    <tr class="hover:bg-gray-50/50 transition-colors">
+                        <td class="py-3.5 pl-3">${rankBadge}</td>
+                        <td class="py-3.5 font-bold text-blue-950 tracking-wide">Divisi ${divObj.divisi}</td>
+                        <td class="py-3.5">
+                            <div class="flex items-center space-x-2">
+                                <span class="font-black ${warnaTeksInternal} min-w-[32px]">${persenInternal}%</span>
+                                <span class="text-[10px] text-gray-400 font-bold">(${divObj.orangLunas}/${divObj.kuota} Orang)</span>
+                            </div>
+                        </td>
+                        <td class="py-3.5 text-right pr-2 font-black text-blue-900">Rp ${divObj.totalBayar.toLocaleString('id-ID')}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        window.onload = fetchInitialData;
+    </script>
+</body>
+</html>
